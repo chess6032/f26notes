@@ -60,11 +60,11 @@ Uhhh I lowkey don't really understand. So is there a hierarchy or not? Idk.
 ## Important rites
 
 - 5 pillars of Islam:
-  - 1. Profess your faith in the belief of one god, for which Muhammad is the messenger.
-  - 2. Pray 5 times a day.
-  - 3. Fast in the month of Rammadan, 29/30 days, from dawn until sunset.
-  - 4. Give 2.5% of your savings to the poor, each year.
-  - 5. Trek the annual pilgramage once in your lifetime.
+  - 1: Profess your faith in the belief of one god, for which Muhammad is the messenger.
+  - 2: Pray 5 times a day.
+  - 3: Fast in the month of Rammadan, 29/30 days, from dawn until sunset.
+  - 4: Give 2.5% of your savings to the poor, each year.
+  - 5: Trek the annual pilgramage once in your lifetime.
 
 ## Roles of men vs. women
 
