@@ -1,4 +1,4 @@
-# Matrices and 3D Graphics
+# Matrix Transformations in Graphics
 
 ## 2D Transformation Matrices
 
@@ -134,4 +134,28 @@ When combining with another transformation matrix $\mathbf M$, *do that transfor
 \end{bmatrix}
 ```
 
+## Rotation around a center point
 
+To rotate $\theta$ (counter-clockwise) around an arbitrary center point $\mathbf c$:
+
+1. Translate by $\mathbf -c$.
+2. Rotate by angle $\theta$.
+3. Translate by $\mathbf +c$ to move the pixels/vertices back into place.
+
+String it together, and the transformation applied to a point $\mathbf p$ looks like this:
+
+```math
+\begin{bmatrix}
+    \mathbf I & \mathbf c \\
+    \mathbf 0^T & 1
+\end{bmatrix}
+\begin{bmatrix}
+    \mathbf R(\theta) & \mathbf 0 \\
+    \mathbf 0^T & 1
+\end{bmatrix}
+\begin{bmatrix}
+    \mathbf I & \mathbf - \mathbf c \\
+    \mathbf 0^T & 1
+\end{bmatrix}
+\mathbf p
+```
