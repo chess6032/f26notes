@@ -57,6 +57,11 @@ void SubClass::hook() override {
 }
 ```
 
+Notice that **hooks do not *need* to be overridden** like primitive operations do.
+
+> [!TIP] 
+> It's important for template methods to **specify which operations are hooks** (*may* be overriden) and which are **abstract operations** (*must* be overriden).
+
 ## Kinds of ops template methods call
 
 * Concrete operations 
@@ -69,9 +74,6 @@ void SubClass::hook() override {
 * Factory methods.
 * Hook operations.
   * Not required to be overriden by subclasses.
-
-> [!TIP] 
-> It's important for template methods to **specify which operations are hooks** (*may* be overriden) and which are **abstract operations** (*must* be overriden).
 
 ## Implementation
 
