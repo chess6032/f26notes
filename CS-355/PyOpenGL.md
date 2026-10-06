@@ -110,4 +110,17 @@ Specifies which mtx is the current matrix
 
 ## `GL_MODELVIEW`
 
+*(This info comes from the [doc](https://www.songho.ca/opengl/gl_transform.html#overview) linked in the Lab 5 spec.)*
+
+**Transformation matrix for object space to camera space.** 
+
+OpenGL has no matrix dedicated to the camera, so you have to simulate the camera yourself. (In other words, OpenGL's camera is always located at $(0,0,0)$, facing down its $-z$ axis.) Camera coordinates are yielded by **multiplying `GL_MODELVIEW` with object coordinates**.
+
+> [!NOTE]
+> The docs linked in the assignment spec refer to "camera space" as "eye space". Sometimes it's also called "view space". Isn't that beautiful?
+
 ## `GL_PROJECTION`
+
+*(This info comes from the [doc](https://www.songho.ca/opengl/gl_transform.html#overview) linked in the Lab 5 spec.)*
+
+**Transformation matrix for camera space to image plane.** That is, it converts camera coordinates to image coordinates (called "*clipped coordinates*").
