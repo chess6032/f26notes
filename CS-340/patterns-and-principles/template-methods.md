@@ -31,6 +31,32 @@ thing.templateMethod();
 
 (TODO)
 
+## Hook Operations
+
+Suppose you want a subclass that extends the behavior of a method it inherits. You could just have it explicitly override its parent's method:
+
+```cpp
+void SubClass::operation() {
+    ParentClass::operation();
+    // extended behavior here...
+}
+```
+
+Or you could turn that method into a *template* method so that *the parent can decide how its subclasses can extend its functionality*. The idea is to call a **hook operation** inside the template method, and subclasses override *that*.
+
+```cpp
+void ParentClass::hook() { /* does nothing */ }
+
+void ParentClass::TemplateOperation() {
+    // do stuff...
+    hook(); // <-- allows for extended behavior in subclasses
+}
+
+void SubClass::hook() override {
+    // extended behavior here...
+}
+```
+
 ## Kinds of ops template methods call
 
 * Concrete operations 
@@ -42,10 +68,21 @@ thing.templateMethod();
   * MUST be override in subclasses.
 * Factory methods.
 * Hook operations.
-  * Provide a default behavior that subclasses can extend if necessary.
-  * (Often does nothing by default.)
   * Not required to be overriden by subclasses.
 
 > [!TIP] 
 > It's important for template methods to **specify which operations are hooks** (*may* be overriden) and which are **abstract operations** (*must* be overriden).
 
+## Implementation
+
+- *Try to minimize primitive operations*. Remember that a subclass has to override *every* primitive operation a template method calls. The more primitive operations there exists, the more tedious things get for clients.
+- *Establish naming conventions identifying operations that must be overridden*. The O'Reilly book gave an example of prefixing primitive ops with "`do`" (`doCreateDocument()`, `doRead()`, etc.).
+
+### C++ access control
+
+In C++ ...
+
+- Primitive ops that have template method calls can be declared `protected` members.
+  - This ensures they are only called by the template method.
+- Primitive ops that *must* be overridden are declared `virtual`.
+- The template method itself should not be overridden, so it should be nonvirtual.
