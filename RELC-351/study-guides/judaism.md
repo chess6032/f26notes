@@ -251,7 +251,7 @@ The gap between Reformed Jews and Orthodox/Conservative Jews is large. While Ref
 
 - Oral Torah has two components: the *Halacha*, containing legal discussions (law), and the Aggadah, containing philosophy, theology, legends, & traditions (lore).
 
-![Evolution of Halacha & Aggadah into the Talmud](image.png)
+![Evolution of Halacha & Aggadah into the Talmud](judaism-figure2.png)
 
 In addition to allat, Jewish rabbis and "laypersons" may turn to other bodies of literature:
 
