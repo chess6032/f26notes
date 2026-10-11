@@ -696,3 +696,141 @@ interface ShoutNumber {
 let shouter: ShoutNumber = (n: number) => { console.log(`YOUR NUMBER IS ${n}`); }
 shouter(67);
 ```
+
+
+## Generics in TypeScript
+
+Generics are defined by adding `<T>` after a function's/class's/whatever's name (where `T` would then be the placeholder type). For arrow functions, you put the angle brackets right before the parenthesized list of parameters.
+
+```ts
+// generics in type script
+
+class GenericClass<T> { /* ... */ }
+
+interface GenericInterface<T> { /* ... */ };
+
+type GenericAlias<T> = { /* ... */ };
+
+function genericFunction<T>(…) { /* ... */}
+
+const genericArrowFunc = <T>(…) => { /* ... */ };
+```
+
+Separate multiple types with commas. e.g., `<T, U, V>`.
+
+> [!WARNING]
+> If you're defining a generic arrow function in a `.tsx` file, you have to ***include a comma** or else it will be interpreted as JSX*.
+>
+> ```ts
+> const bad  = <T>(…) => … ;  // <T> is interpreted as a JSX tag. Throws error.
+> const good = <T,>(…) => … ; // <T,> is correctly interpreted as a generic.
+> ```
+
+### Inferred bindings on generic function calls
+
+TypeScript can *infer* the type argument for function calls.
+
+```ts
+// Plain function declaration
+function first<T>(arr: T[]): T { return arr[0]; }
+first([1, 2, 3]);        // T inferred as number
+
+// Arrow function
+const wrap = <T,>(x: T) => ({ value: x });
+wrap('hi');              // T inferred as string
+
+// Generic class constructor
+class Box<T> { constructor(public item: T) {} }
+new Box(42);             // Box<number>, T inferred from the argument
+
+// Built-in library methods
+[1, 2, 3].map(n => String(n));   // map<U> infers U as string
+Promise.resolve(true);           // Promise<boolean>
+new Map([['a', 1]]);             // Map<string, number>
+```
+
+This only works for *function calls*. If you reference a *type* that uses a generic, inference doesn't apply. (e.g., when declaring a variable of type `Box<T>`, you have to supply a type for `T`.)
+
+Even in cases where TypeScript *can* infer generic types, you are still allowed to explicitly define a type.
+
+### Scoping
+
+Consider TypeScript's signature for its `Array` class's `filter()` and `map()` functions:
+
+```ts
+interface Array<T> {
+  filter(
+    callbackfn: (value: T, index: number, array: T[]) => any,
+    thisArg?: any
+  ): T[]
+  map<U>(
+    callbackfn: (value: T, index: number, array: T[]) => U,
+    thisArg?: any
+  ): U[]
+}
+```
+
+Note here that `T` applies to the entire `Array` class, but `U` is scoped to *just* the `map()` function.
+
+#### Typings are inferred by the type parameter, not type argument
+
+(Recall: "*parameter*" refers to the *definition* of some input, while "*argument*" refers to the *value passed in* for that input.)
+
+TypeScript uses the *definition* of the generic for type inference. This can cause a problem&mdash;especially if you're using library function calls&mdash;where TypeScript isn't specific enough with its type inferencing.
+
+For example, this code--
+
+```ts
+let promise = new Promise(resolve => 
+  resolve(45)
+);
+promise.then(result => // Inferred as {}
+  result * 4 // ERROR TS2362 (result is not compatible with * operator)
+)
+```
+
+--is fixed by explicitly providing a type:
+
+```ts
+let promise = new Promise<number>(resolve => 
+  resolve(45)
+);
+promise.then(result => // Inferred as number
+  result * 4
+)
+```
+
+### Default type arguments
+
+You can give a generic a default type the same way you give a parameter a default value: `someName<T = defaultType>`
+
+### Bounded polymorphism
+
+Sometimes, "this thing of some type `T`" isn't enough, and you need "this thing is of some type `U` that is *at least `U`*." 
+
+You would do this by defining the type parameter as `<U extends T>`. Such a case is called adding an *upper bound*. You could add further bounding with type intersections (e.g., `<V extends T & U>`).
+
+This is especially crucial when you want to be able to safely invoke a method or reference a property on an object of a generic type. Here's an example of just that in a bounded BST node type:
+
+```ts
+type BSTNode = {
+  value: string
+}
+
+type LeafNode = BSTNode & {
+  isLeaf: true
+}
+
+type InnerNode = BSTNode & {
+  children: [TreeNode] | [TreeNode, TreeNode]
+}
+
+function mapNode<T extends TreeNode>( // <--- UPPER BOUND
+  node: T, f: (value: string) => string
+): T {
+  return {
+    ...node,
+    value: f(node.value);
+  }
+}
+```
