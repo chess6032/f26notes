@@ -681,3 +681,18 @@ console.log(daysOfTheWeek.fri); // 4
 console.log(daysOfTheWeek.sat); // 5
 console.log(daysOfTheWeek.sun); // 6
 ```
+
+## Types/Interfaces: Call Signatures
+
+When defining an object type (or an interface), you can include *call signatures*. These are functions signatures with no name, and they are invoked by calling the instance of the type (or interface) itself.
+
+For example:
+
+```ts
+interface ShoutNumber {
+    (n: number): void
+};
+
+let shouter: ShoutNumber = (n: number) => { console.log(`YOUR NUMBER IS ${n}`); }
+shouter(67);
+```
