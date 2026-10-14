@@ -298,9 +298,9 @@ For this class, you need to know the following (built-in) React hooks:
 * `useEffect()`
 * `useCallback()`
 * `useMemo()`
-* `useState()`
-* `useContext()`
-* `useRef()`
+* [`useState()`](#usestate)
+* [`useRef()`](#useref)
+* [`useContext()`](#usecontext)
 
 Those last three are for managing React state.
 
@@ -315,6 +315,45 @@ You'll also need to know [`useNavigate()`](#navigation-with-usenavigate), [`useL
 1. Import the hook.
 2. Call the method and destructure its children.
 3. Use the children.
+
+### `useEffect()`
+
+`useEffect()` lets a function component perform side effects *after* React has rendered it. The basic form is this:
+
+```js
+useEffect(() => {
+  // Side effect
+}, [/* dependencies... */])
+```
+
+- The dependency array controls when the effect runs.
+  - No array: runs after **every render**.
+  - Empty array (`[]`): Runs after **initial render**.
+  - Specific dependencies: runs after initial render *and* **whenever a dependency changes**.
+- Return (optional): A cleanup function, called before the effect runs again and when the component is removed.
+
+Effects should generally be used to **synchronize a component with external systems**, *not* to derive values that can be calculated during rendering.
+
+> [!NOTE]
+> React schedules dependencies by comparing their current values to their previous with `Object.is`. This means that it **compares functions and objects by references, not by contents**. If you're adding an function or object to `useEffect()`'s dependencies, you may want to use `useCallback()` or `useMemo()`, respectively.
+
+### `useCallback()`
+
+`useCallback()` **memoizes a function**.
+
+- Returns the same reference to a function until its dependencies changes.
+- Takes in a function argument that creates the memoized function.
+
+### `useMemo()`
+
+`useMemo()` **memoizes an object** (value?).
+
+- Returns the same reference to an object until its object changes.
+  - Avoids unnecessary recreations between renders.
+- Takes a function as a parameter that creates the memoized object (value?).
+
+> [!WARNING]
+> Don't overuse this function&mdash;or you'll add complexity without improving performance.
 
 ### React state
 
