@@ -325,14 +325,8 @@ Properties are one half of the picture. State is the other half.
   - Thus, when state changes, components must be re-rendered.
 - A React component that does *not* modify state is called a *pure* component.
 - Good practice: 
-  - Pass state *down* the component tree via plain *properties*. 
-  - To pass state *up* (e.g., when the state setter was defined in some parent component in the tree), have the parent pass the children a function that can change it. That is, a function that calls the setter.
-    - e.g., parent gives `const addColors = id => setColors([...colors, id]);` to child's `onAdd` property, and the child calls it when a button is clicked or something.
-    - This will require adding a function to the child's properties. 
-      - The signature for that would be `(newVal: T) => void`, where `T` is the state's type.
-      - If you're passing in a interface for the properties, make this member *optional* on the interface.
-      - Give the child component a *default value* for the function that is a *no-op* (`() => {}`).
-  - ^ Or, you can just use **context**.
+  - Pass state *down* the component tree via plain *values*.
+  - Pass state *up* the component tree by giving children setter *functions*.
 
 ### `useState()`
 
@@ -373,8 +367,12 @@ React context gives us a way to share data between components in the component t
 
 Three steps:
 
-1. Create a context "provider" with `createContext()`, passing in a default value.
-2. Wrap children in <code><<i>Context</i>.Provider value={<i>value</i>}></code>, where *`Context`* is the variable you assigned to `createContext()`.
+1. **Create a context object** with `createContext()`, passing in default values. 
+    - This object will contain all the values and any get/set functions.
+    - e.g., `const UserInfoContext: Context<UserInfo> = createContext<UserInfo>(derfaultUserInfo);`
+2. **Wrap children in a context provider**. That looks like this: <code><<i>Context</i>.Provider value={<i>value</i>}></code>, where *`Context`* is the variable you assigned to `createContext()`.
+    - This is the "subscription".
+    - The slides recommend making your own provider component which encapsulates this logic.
 3. In those children (or their children), retrieve context with <code>const <i>variable</i> = useContext(<i>Context</i>)</code>.
 
 > [!NOTE]
@@ -408,7 +406,7 @@ function Child() {
 #### Passing data up
 
 ```tsx
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 
 interface CounterContextType {
   count: number;
@@ -416,27 +414,40 @@ interface CounterContextType {
 }
 
 const CounterContext = createContext<CounterContextType>({
-  // default values, reassigned later
+  // default values, only used if no provider among ancestors
   count: 0, 
   setCount: () => {} 
 });
 
-function App() {
+function CounterContextProvider({ children }: { children: ReactNode }) {
   const [count, setCount] = useState(0);
 
   return (
     <CounterContext.Provider value={{ count, setCount }}>
-      <p>App sees count: {count}</p>
-      <Parent />
+      {children}
     </CounterContext.Provider>
   );
+}
+
+function App() {
+  return (
+    <CounterContextProvider>
+      <CountDisplay />
+      <Parent />
+    </CounterContextProvider>
+  );
+}
+
+function CountDisplay() {
+  const { count } = useContext(CounterContext);
+  return <p>App sees count: {count}</p>;
 }
 
 function Parent() {
   return <Child />;
 }
 
-function Chid() {
+function Child() {
   const { count, setCount } = useContext(CounterContext);
 
   return (
