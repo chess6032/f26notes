@@ -332,6 +332,7 @@ Properties are one half of the picture. State is the other half.
       - The signature for that would be `(newVal: T) => void`, where `T` is the state's type.
       - If you're passing in a interface for the properties, make this member *optional* on the interface.
       - Give the child component a *default value* for the function that is a *no-op* (`() => {}`).
+  - ^ Or, you can just use **context**.
 
 ### `useState()`
 
@@ -365,6 +366,86 @@ Properties are one half of the picture. State is the other half.
 - WHEN TO USE:
   - Use to store values that must be *remembered* across re-renders but shouldn't cause re-renders.
   - Use if a remembered value doesn't change (more efficient for this than `useState()`).
+
+### `useContext()`
+
+React context gives us a way to share data between components in the component tree.
+
+Three steps:
+
+1. Create a context "provider" with `createContext()`, passing in a default value.
+2. Wrap children in <code><<i>Context</i>.Provider value={<i>value</i>}></code>, where *`Context`* is the variable you assigned to `createContext()`.
+3. In those children (or their children), retrieve context with <code>const <i>variable</i> = useContext(<i>Context</i>)</code>.
+
+> [!NOTE]
+> In React v19 and newer, the tag can be called just <code><<i>Context</i>></code> instead of <code><<i>Context</i>.Provider></code>.
+<!-- 
+#### Passing data down
+
+```jsx
+import { createContext, useContext } from "react";
+
+const NumberContext = createContext(0);
+
+function App() {
+  return (
+    <NumberContext.Provider value={42}>
+      <Parent />
+    </NumberContext.Provider>
+  );
+}
+
+function Parent() {
+  return <Child />;
+}
+
+function Child() {
+  const n = useContext(NumberContext);
+  return <p>The number is {n}</p>;
+}
+``` -->
+
+#### Passing data up
+
+```tsx
+import { createContext, useContext, useState } from "react";
+
+interface CounterContextType {
+  count: number;
+  setCount: (value: number | ((prev: number) => number)) => void; // or react's `Dispatch<SetStatAction<number>>`
+}
+
+const CounterContext = createContext<CounterContextType>({
+  // default values, reassigned later
+  count: 0, 
+  setCount: () => {} 
+});
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <CounterContext.Provider value={{ count, setCount }}>
+      <p>App sees count: {count}</p>
+      <Parent />
+    </CounterContext.Provider>
+  );
+}
+
+function Parent() {
+  return <Child />;
+}
+
+function Chid() {
+  const { count, setCount } = useContext(CounterContext);
+
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      Child clicked {count} times
+    </button>
+  )
+}
+```
 
 ## Misc
 
