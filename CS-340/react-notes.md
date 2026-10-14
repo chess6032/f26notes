@@ -74,6 +74,7 @@ Of course, nowadays, instead of using `React.createElement()` and `ReactDOM.rend
 - Properties may either be **strings** or **JS expressions**.
 - JS expressions are enclosed in curly braces (`{}`).
   - This includes non-string JS literals. e.g., `{false}`.
+  - This includes more JSX.
 - `className` specifies the HTML "class" property.
   - (JSX can't use `class` because that is already a JS keyword.)
 
@@ -117,10 +118,120 @@ That's all the notes I'm going to take on this bc I don't think it will be on th
   - Shorthand (JSX): **`<> ... </>`**. 
 - React Fragments are **not visible in the DOM.**
 
-## Debugging React in Chrome
+## React Router
+
+In a single-page app, browser features like bookmarks, history, URLs, etc. become problematic since each page is no longer tied to a separate HTML document. [Routing](https://oreil.ly/jD1HC) solves this issue.
+
+- Routing: Defining endpoints for client's requests.
+  - These endpoints work in conjunction w/ browser's location & history objects.
+  - These endponints identify requested content so JS can load & render the appropriate UI.
+
+React doesn't come with a standard Router (unlike most web frameworks, e.g. Angular). But a router created by engineers Michael Jackson and Ryan Florence, titled simply the React Router, has been widely adopted. This section covers notes on that project.
+
+### Usage
+
+> Package name: `"react-router-dom"`
+
+- Wrap your top-level `<App />` component in a `BrowserRouter` (often imported as just `Router`.)
+- Set up route configurations in your top-level `<App />` component: a `<Routes>` component, with `<Route>` children.
+- Recommended: Have a `<nav>` component full of `<Link>` components that link to these routes.
+  - Links' `to` property (string): path.
+
+### `<Route>` component properties
+
+- `path`: Path that appears in URL.
+- `element`: React element (component?) to load for that path.
+
+When the browser's location (path in the URL, I think?) matches that `path`, that `element` is displayed.
+
+> [!TIP]
+> - Define a home page by using the path `"/"`.
+> - Include at least one route with a path of `"*"` to catch unknown paths. Have this route's element be a 404 page.
+
+### Other properties passed to routes
+
+In addition to component properties (see above), you can use (what I believe are) React hooks to grab other properties the `<Router>` passes to its children. 
+
+e.g., `let location = useLocation()` &rarr; `location.pathname` shows the window's present location.
+
+### Nested Routes
+
+Suppose you want to map a `Foo` element to `/foo` and a `FooBar` element to `/foo/bar`.
+
+The route set up would look as such:
+
+```jsx
+<Routes>
+  <Route path="foo" element={<Foo />}>
+    <Route path="bar" element={<FooBar />} />
+  </Route>
+</Routes>
+```
+
+Then, the `Foo` component's function would have to include an `<Outlet />` in its return. This is where those nested components will render (if the path matches).
+
+
+### Redirects
+
+> [!NOTE]
+> As of React Router v6, the `<Redirect>` component is deprecated&mdash;completely removed, in fact&mdash;in favor of `<Navigate>`, route-level redirects, and `redirect()`. The book I'm reading was written/published before that version released.
+
+```jsx
+<Routes>
+  {/* other routes 'n shih... */ }
+  <Redirect from="src" to="dest">
+</Routes>
+```
+
+- If the brower's location matches the path specified in `from`, the browser is "redirected" to the path specified in `to`.
+  - It's best practice to have the paths start with `"/"`.
+  - The `to` field can also be a location object (`{ pathname, search, state }`).
+
+Useful if a page is moved from one path to another, so that old links (or bookmarks, etc.) to that page are still supported.
+
+### `useRoutes()`
+
+`<Routes>` and `<Route>` are wrappers around `useRoutes()`. 
+
+`useRoutes()` takes in an array of `{ path, element, children? }` objects, and returns the equivalent of a `<Routes>` object w/ `<Route>` children.
+
+### Routing parameters (`useParams()`)
+
+You can add parameters to a path w/ routing params, which are retrieved with the `useParams()` hook.
+
+- Params are defined in the `path` property of a `Route`. They are passed to its `element`, who uses `useParams()` to retrieve them.
+  - Params are indicated with a leading `:` in the path. e.g., `foo/bar/:param/fizz`.
+- `useParams()` returns an object whose properties match the name of the path's routing parameters.
+  - Values are *always strings*.
+
+```jsx
+// Route definition
+<Route path="/users/:userId/posts/:postId" element={<Post />} />
+
+// Post.jsx
+import { useParams } from "react-router-dom";
+
+export function Post() {
+  const { userId, postId } = useParams();
+  return <h1>Post {postId} by user {userId}</h1>;
+}
+```
+
+### Navigation with `useNavigate()`
+
+`useNavigate()` returns a function that changes the URL programmatically. This function accepts a (string) path and "redirects" the browser to that path.
+
+- Use `<Link to="..." />` for plain clickable links, and `useNavigate()` when navigation is a side effect of something else happening.
+- Conventionally, `useNavigate()`'s return is bound to a variable called `navigate`.
+- You can add a `{ replace: true }` parameter to *replace* the previous history with the new path (instead of pushing).
+- You can pass in `-1` to go to the previous page.
+
+## Misc
+
+### Debugging React in Chrome
 
 With the React Developer Tools Extension for Google Chrome, you can look at the present state of the component tree.
 
-## Webpack
+### Webpack
 
 I don't think we covered this in class, so I'm not going to take notes on it. But it sounds like it's kinda like a toolchain or ecosystem for compiling React code.
