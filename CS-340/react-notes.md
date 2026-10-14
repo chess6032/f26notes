@@ -66,6 +66,11 @@ Of course, nowadays, instead of using `React.createElement()` and `ReactDOM.rend
 - Each individual part of the user interface is built out of a React *component*.
 - React components are *functions*. **React components return React elements.**
 
+> [!NOTE]
+> "React *element*" &ne; "React *component*". The *component* is the *function itself*, e.g. `function App()`, while the *element* is `<App />`, whose *type* is that component.  
+> 
+> With that said, I use the terms "element" and "component" pretty interchangeably across this page. (Mostly because I don't know enough to tell when the textbook/slides are talking about one vs. the other.)
+
 ### JSX
 
 <pre><code><<i>ComponentName</i> <i>prop1</i>="&hellip;" <i>prop2</i>={<i>javaScript&hellip;</i>} &hellip; />
@@ -261,6 +266,19 @@ export function Post() {
 > [!NOTE]
 > Prior to React Router v5.1, parameters were passed as a `match` prop to any component a `<Route>` component renders.
 
+### Query string parameters
+
+You can use `useSearchParams()` to access the parameters in the *query string* of the current path/location/route.
+
+e.g.:
+
+```js
+// URL query string: "?page=2&filter=active"
+const [ searchParams, setSearchParams ] = useSearchParams();
+const page = searchParams.get("page");
+const filter = searchParams.get("filter");
+```
+
 ### Navigation with `useNavigate()`
 
 `useNavigate()` returns a function that changes the URL programmatically. This function accepts a (string) path and "redirects" the browser to that path.
@@ -272,6 +290,69 @@ export function Post() {
 
 > [!TIP]
 > Create a navigation bar with `<NavLink>`... or something? Idk.
+
+## React Hooks/State
+
+For this class, you need to know the following (built-in) React hooks:
+
+* `useEffect()`
+* `useCallback()`
+* `useMemo()`
+* `useState()`
+* `useContext()`
+* `useRef()`
+
+Those last three are for managing React state.
+
+You'll also need to know [`useNavigate()`](#navigation-with-usenavigate), [`useLocation()`](#other-properties-passed-to-routes), [`useParams()`](#route-parameters-useparams), and [`useSearchParams()`](#query-string-parameters), which are React *Router* hooks.
+
+### Hooks
+
+*Hooks* contain reusable code logic that is **separate from the comopnent tree**. Thus, they allow us to *hook up* functionality to our components.
+
+### Using React hooks
+
+1. Import the hook.
+2. Call the method and destructure its children.
+3. Use the children.
+
+### React state
+
+Properties are one half of the picture. State is the other half.
+
+- The *state* of a React app is driven by data that has the ability to change.
+- State and properties are related to each other. **When the state of a component tree changes, so do its properties.**
+  - Thus, when state changes, components must be re-rendered.
+- A React component that does *not* modify state is called a *pure* component.
+- Good practice: 
+  - Pass state *down* the component tree via plain *properties*. 
+  - To pass state *up* (e.g., when the state setter was defined in some parent component in the tree), have the parent pass the children a function that can change it. That is, a function that calls the setter.
+    - e.g., parent gives `const addColors = id => setColors([...colors, id]);` to child's `onAdd` property, and the child calls it when a button is clicked or something.
+    - This will require adding a function to the child's properties. 
+      - The signature for that would be `(newVal: T) => void`, where `T` is the state's type.
+      - If you're passing in a interface for the properties, make this member *optional* on the interface.
+      - Give the child component a *default value* for the function that is a *no-op* (`() => {}`).
+
+### `useState()`
+
+- Returns an array:
+  - **Elem 0: *Variable* containing state data.**
+    - ("State variable")
+  - **Elem 1: *Function* to update the state data**.
+    - ("Updater function")
+    - This function does NOT update the state variable.
+  - Naming convention: `[ statename, setStatename ] = setState( /* initial val... */ );`
+- When the updater function is called (and is passed in a value *not* equal to the state's current value), it rerenders the component (that called `useState()`).
+- **`useState()` takes in one argument: an *initial* value for the state.**
+  - i.e., this value is only used the *first* time the component calls `useState()`.
+- The updater function can take two parameter types: a value or a function.
+  - Passing in a value updates the internal state&mdash;but does *not* update the *state variable* originally returned (as elem 0) by `useState()`.
+  - The function signature is something like `(previous: T) -> T`, where `T` is the state's data type and `previous` is the state's current value; the state's value is then overwritten with the function's return.
+  - ^ Between these two, **passing in a *function* is generally preferred**, as it helps avoid "stale closures".
+    - (e.g., for `[ count, setCount ] = useState(0);`, calling `setCount(count + 1);` over and over again will repeatedly set the internal count to `1`, because the `count` variable stays `0` across the set calls. Meanwhile, calling `setCount(previous => previous + 1);` *will* increment the internal count as expected.)
+
+> [!NOTE]
+> In TypeScript, the state's data type can be inferred from the argument passed into `useState()`. But you can also define it explicitly by calling <code>useState<<i>T</i>>(&hellip;)</code>, where *`T`* represents a type.
 
 ## Misc
 
