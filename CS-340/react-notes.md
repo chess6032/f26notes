@@ -354,6 +354,18 @@ Properties are one half of the picture. State is the other half.
 > [!NOTE]
 > In TypeScript, the state's data type can be inferred from the argument passed into `useState()`. But you can also define it explicitly by calling <code>useState<<i>T</i>>(&hellip;)</code>, where *`T`* represents a type.
 
+### `useRef()`
+
+`useRef()` is similar to `useState()`, except it **does *not* trigger a re-render**&mdash;even if it is modified.
+
+- Returns a mutable `{ current }` object ("ref") that **persists for the full lifetime of the component**.
+  - The same object is returned on every render. (Unlike a `let` var, which resets each render.)
+- Mutating `.current` does NOT trigger a re-render.
+- Accepts one argument: an *initial* value.
+- WHEN TO USE:
+  - Use to store values that must be *remembered* across re-renders but shouldn't cause re-renders.
+  - Use if a remembered value doesn't change (more efficient for this than `useState()`).
+
 ## Misc
 
 ### Debugging React in Chrome
