@@ -118,6 +118,41 @@ That's all the notes I'm going to take on this bc I don't think it will be on th
   - Shorthand (JSX): **`<> ... </>`**. 
 - React Fragments are **not visible in the DOM.**
 
+## Conditional rendering of React Components
+
+### If/else
+
+Use the ternary operator (<code>&hellip; ? &hellip; : &hellip;</code>).
+
+e.g.:
+
+```jsx
+<BrowserRouter>
+  {isAuthenticated() ? (
+    <AuthenticatedRoutes />
+  ) : (
+    <UnauthenticatedRoutes />
+  )}
+</BrowserRouter>
+```
+
+### If
+
+Use <code><i>condition</i> && <i>elementJSX</i></code>.
+
+e.g.:
+
+```jsx
+<div className="col p-3">
+  {!displayedUser.equals(currentUser) && (
+    <p id="returnToLoggedInUser">
+    Return to{" "}
+    <Link to={`./${currentUser.alias}`} onClick={switchToLoggedInUser} />
+    </p>
+  )}
+</div>
+```
+
 ## React Router
 
 In a single-page app, browser features like bookmarks, history, URLs, etc. become problematic since each page is no longer tied to a separate HTML document. [Routing](https://oreil.ly/jD1HC) solves this issue.
@@ -130,9 +165,9 @@ React doesn't come with a standard Router (unlike most web frameworks, e.g. Angu
 
 ### Usage
 
-> Package name: `"react-router-dom"`
+> Package name: `"react-router-dom"` (or sometimes just `"react-router"`? idk the difference)
 
-- Wrap your top-level `<App />` component in a `BrowserRouter` (often imported as just `Router`.)
+- Wrap your top-level `<App />` component in a `<BrowserRouter>` (often imported as just `Router`.)
 - Set up route configurations in your top-level `<App />` component: a `<Routes>` component, with `<Route>` children.
 - Recommended: Have a `<nav>` component full of `<Link>` components that link to these routes.
   - Links' `to` property (string): path.
@@ -150,7 +185,7 @@ When the browser's location (path in the URL, I think?) matches that `path`, tha
 
 ### Other properties passed to routes
 
-In addition to component properties (see above), you can use (what I believe are) React hooks to grab other properties the `<Router>` passes to its children. 
+In addition to component properties (see above), you can use (what I believe are) React hooks to grab other properties the `<BrowserRouter>` passes to its children. 
 
 e.g., `let location = useLocation()` &rarr; `location.pathname` shows the window's present location.
 
@@ -170,6 +205,8 @@ The route set up would look as such:
 
 Then, the `Foo` component's function would have to include an `<Outlet />` in its return. This is where those nested components will render (if the path matches).
 
+> [!NOTE]
+> The slides called these "Layout Routes".
 
 ### Redirects
 
@@ -195,14 +232,18 @@ Useful if a page is moved from one path to another, so that old links (or bookma
 
 `useRoutes()` takes in an array of `{ path, element, children? }` objects, and returns the equivalent of a `<Routes>` object w/ `<Route>` children.
 
-### Routing parameters (`useParams()`)
+### Route parameters (`useParams()`)
 
-You can add parameters to a path w/ routing params, which are retrieved with the `useParams()` hook.
+You can add parameters to a path w/ route params, which are retrieved with the `useParams()` hook.
 
 - Params are defined in the `path` property of a `Route`. They are passed to its `element`, who uses `useParams()` to retrieve them.
-  - Params are indicated with a leading `:` in the path. e.g., `foo/bar/:param/fizz`.
-- `useParams()` returns an object whose properties match the name of the path's routing parameters.
+  - **Params are indicated with a leading `:` in the path**. 
+    - e.g., `foo/bar/:param/fizz`.
+- **`useParams()` returns an object whose properties match the name of the path's route parameters**.
   - Values are *always strings*.
+- **You can make parameters *optional* by adding a succeeding `?`**&mdash;called an **optional segment**.
+  - e.g., `foo/bar` and `foo/bar/fizzbang` will both match `path="foo/bar/:sillyString"`.
+  - When an optional segment is absent, its parameter's value is `undefined`.
 
 ```jsx
 // Route definition
@@ -217,6 +258,9 @@ export function Post() {
 }
 ```
 
+> [!NOTE]
+> Prior to React Router v5.1, parameters were passed as a `match` prop to any component a `<Route>` component renders.
+
 ### Navigation with `useNavigate()`
 
 `useNavigate()` returns a function that changes the URL programmatically. This function accepts a (string) path and "redirects" the browser to that path.
@@ -225,6 +269,9 @@ export function Post() {
 - Conventionally, `useNavigate()`'s return is bound to a variable called `navigate`.
 - You can add a `{ replace: true }` parameter to *replace* the previous history with the new path (instead of pushing).
 - You can pass in `-1` to go to the previous page.
+
+> [!TIP]
+> Create a navigation bar with `<NavLink>`... or something? Idk.
 
 ## Misc
 
