@@ -18,11 +18,13 @@ Consider the case of a *chair* that's inside a *classroom* that's inside a *buil
 
 Each $\boldsymbol T_{\text{obj}}$ is $\text{obj}$'s transformation matrix&mdash;translation, scale, & rotation&mdash;from its coord system to its parent's. e.g., $\boldsymbol T_{\text{classroom}}$ transforms from the obj coords of the classroom to the obj coords of the building&mdash;the classroom's parent. $\boldsymbol T_{\text{campus}}$ is what finally transforms to world coords.
 
-To satisfy my desire for generality, I'll say this: For an object with $N$ ancestors&mdash;that is, its parent is transformation $N$&mdash;its obj-to-world transformation would look like this: 
+To satisfy my desire for generality, I'll say this: For an object with $N$ ancestors&mdash;that is, its parent is transformation $N$&mdash;its obj-to-world transformation be&mdash;
 
 ```math
 \mathbf p_{\text{world}} = \boldsymbol T_{1} \boldsymbol T_{2} \dots \boldsymbol T_{N} \boldsymbol T_{\text{obj}} \mathbf p_{\text{obj}}
 ```
+
+&ndash;where $\boldsymbol T_{k}$ is the transformation from parent $k$'s coordinate system to parent $k-1$'s coordinate system.
 
 ## Leveraging composition
 
